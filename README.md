@@ -1,6 +1,3 @@
-# LEARNING ALL ABOUT GRPC 
+# LEARNING ALL ABOUT GRPC
 
-this is to learn about grpc and get professional at it 
-
-
-
+this is to learn about grpc and get professional at it
