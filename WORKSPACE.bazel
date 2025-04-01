@@ -1,0 +1,12 @@
+workspace(name = "github_com_paschalolo_grpc_go_for_professionals")
+
+load(
+    "//:versions.bzl",
+    "GAZELLE_SHA256",
+    "GAZELLE_VERSION",
+    "GO_VERSION",
+    "PROTOC_GEN_VALIDATE_VERSION",
+    "PROTO_VERSION",
+    "RULES_GO_SHA256",
+    "RULES_GO_VERSION",
+)
