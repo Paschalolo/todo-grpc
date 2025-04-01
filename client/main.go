@@ -1,0 +1,27 @@
+package main
+
+import (
+	"log"
+	"os"
+
+	"google.golang.org/grpc"
+)
+
+func main() {
+	args := os.Args
+	if len(args) == 0 {
+		log.Fatalln("usage client [IP_ADDR] ")
+	}
+	addr := args[0]
+	opts := []grpc.DialOption{}
+
+	conn, err := grpc.NewClient(addr, opts...)
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer func(client *grpc.ClientConn) {
+		if err := client.Close(); err != nil {
+			log.Fatalf("unexpected error %v \n", err)
+		}
+	}(conn)
+}

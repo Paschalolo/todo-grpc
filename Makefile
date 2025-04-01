@@ -1,5 +1,8 @@
 .DEFAULT_GOAL := generate
-.PHONY : generate
+.PHONY : generate server 
+server : 
+	cd server 
+	go run *.go localhost:8081
 generate : 
 	@echo  "Genrating protobuf and grpc files"
 	cd proto
