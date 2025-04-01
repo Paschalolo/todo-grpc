@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -13,7 +14,9 @@ func main() {
 		log.Fatalln("usage client [IP_ADDR] ")
 	}
 	addr := args[0]
-	opts := []grpc.DialOption{}
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	}
 
 	conn, err := grpc.NewClient(addr, opts...)
 	if err != nil {
@@ -24,4 +27,5 @@ func main() {
 			log.Fatalf("unexpected error %v \n", err)
 		}
 	}(conn)
+
 }
