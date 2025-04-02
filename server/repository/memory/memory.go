@@ -2,6 +2,7 @@ package memory
 
 import (
 	"context"
+	"log"
 	"sync"
 	"time"
 
@@ -20,6 +21,7 @@ func New() *Repostiroy {
 func (r *Repostiroy) AddTask(_ context.Context, description string, dueDate time.Time) (uint64, error) {
 	r.Lock()
 	defer r.Unlock()
+	log.Println("here")
 	nextId := uint64(len(r.Tasks))
 	task := &pb.Task{
 		Id:          nextId,
@@ -32,6 +34,7 @@ func (r *Repostiroy) AddTask(_ context.Context, description string, dueDate time
 
 func (r *Repostiroy) GetTasks(f func(any) error) error {
 	for _, task := range r.Tasks {
+
 		if err := f(task); err != nil {
 			return err
 		}

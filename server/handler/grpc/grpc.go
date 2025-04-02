@@ -19,7 +19,7 @@ func NewHandler(ctrl *controller.Controller) *Handler {
 	return &Handler{ctrl: ctrl}
 }
 
-func (h *Handler) Addtask(ctx context.Context, req *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
+func (h *Handler) AddTask(ctx context.Context, req *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
 	id, err := h.ctrl.Repo.AddTask(ctx, req.Description, req.DueDate.AsTime())
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())

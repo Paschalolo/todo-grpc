@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -10,6 +11,7 @@ import (
 	grpcHandler "github.com/paschalolo/grpc/server/handler/grpc"
 	"github.com/paschalolo/grpc/server/repository/memory"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -18,7 +20,7 @@ func main() {
 		log.Fatalln("usage: server [IP_ADDR]")
 	}
 	addr := args[0]
-	lis, err := net.Listen("tcp", addr)
+	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", addr))
 	if err != nil {
 		log.Fatalf("failed to listen : %v \n ", err)
 	}
@@ -30,15 +32,17 @@ func main() {
 	}(lis)
 	inMemory := memory.New()
 	ctrl := controller.NewController(inMemory)
-	todoHandler := grpcHandler.NewHandler(ctrl)
+	h := grpcHandler.NewHandler(ctrl)
 	log.Printf("listening at %s\n", addr)
 	opt := []grpc.ServerOption{}
-	s := grpc.NewServer(opt...)
-	pb.RegisterTodoServiceServer(s, todoHandler)
+	srv := grpc.NewServer(opt...)
+	reflection.Register(srv)
+	pb.RegisterTodoServiceServer(srv, h)
+	log.Printf("listening at %s\n", addr)
 	//registration of endpoints
-	defer s.Stop()
+	defer srv.Stop()
 
-	if err := s.Serve(lis); err != nil {
+	if err := srv.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v\n", err)
 	}
 
