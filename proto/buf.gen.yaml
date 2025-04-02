@@ -1,0 +1,8 @@
+version: v1
+plugins:
+  - plugin: go
+    out: . #output to the root of the project
+    opt: paths=source_relative #output the generated go files relative to the proto file's location
+  - plugin: go-grpc
+    out: . #output to the root of the project
+    opt: paths=source_relative #output the generated go grpc files relative to the proto file's location
