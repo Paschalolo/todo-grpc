@@ -8,7 +8,7 @@ import (
 
 	"github.com/paschalolo/grpc/client/grpcutil"
 	client "github.com/paschalolo/grpc/client/handler/grpc"
-	pb "github.com/paschalolo/grpc/proto/todo/v1"
+	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -46,9 +46,9 @@ func main() {
 	fmt.Println("-------------------------------")
 	fmt.Println("-------------UPDATE TASKS--------------")
 	clientCall.UpdateTasks([]*pb.UpdateTasksRequest{
-		{Task: &pb.Task{Id: id1, Description: "a better day"}},
-		{Task: &pb.Task{Id: id2, DueDate: timestamppb.New(dueDate.Add(5 * time.Hour))}},
-		{Task: &pb.Task{Id: id3, Done: true}},
+		{Id: id1, Description: "a better day"},
+		{Id: id2, DueDate: timestamppb.New(dueDate.Add(5 * time.Hour))},
+		{Id: id3, Done: true},
 	}...)
 	fmt.Println("------------PRINT TASK----------------")
 	clientCall.PrintTasks()

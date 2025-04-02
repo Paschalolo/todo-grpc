@@ -2,6 +2,7 @@ syntax = "proto3";
 package todo.v1;
 
 import "google/protobuf/timestamp.proto";
+import  "google/protobuf/field_mask.proto";
 option go_package = "github.com/paschalolo/grpc/todo/v1";
 message Task{
     uint64 id = 1 ;
@@ -25,7 +26,9 @@ service TodoService{
     rpc DeleteTasks (stream DeleteTasksRequest) returns (stream UpdateTasksResponse);
 }
 
-message ListTasksRequest{}
+message ListTasksRequest{
+    google.protobuf.FieldMask mask = 1;
+}
 message ListTasksResponse{
     Task task = 1 ;
     bool overdue = 2 ;

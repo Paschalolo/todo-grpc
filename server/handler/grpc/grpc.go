@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/paschalolo/grpc/proto/todo/v1"
+	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"github.com/paschalolo/grpc/server/controller"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -64,7 +64,7 @@ func (h *Handler) UpdateTasks(stream pb.TodoService_UpdateTasksServer) error {
 		out, _ := proto.Marshal(req)
 		totalLength += len(out)
 
-		err = h.ctrl.Repo.UpdateTasks(req.Task.Id, req.Task.Description, req.Task.DueDate.AsTime(), req.Task.Done)
+		err = h.ctrl.Repo.UpdateTasks(req.Id, req.Description, req.DueDate.AsTime(), req.Done)
 		if err != nil {
 			return err
 		}

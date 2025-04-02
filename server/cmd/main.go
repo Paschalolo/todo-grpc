@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	pb "github.com/paschalolo/grpc/proto/todo/v1"
+	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"github.com/paschalolo/grpc/server/controller"
 	grpcHandler "github.com/paschalolo/grpc/server/handler/grpc"
 	"github.com/paschalolo/grpc/server/repository/memory"

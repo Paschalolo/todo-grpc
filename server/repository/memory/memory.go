@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/paschalolo/grpc/proto/todo/v1"
+	pb "github.com/paschalolo/grpc/proto/todo/v2"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

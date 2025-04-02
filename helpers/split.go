@@ -12,7 +12,7 @@ import (
 
 // serializedSize calculates the serialized size of the msg.
 // It returns the number of bytes in which the msg was serialized.
-func serializedSize[M protoreflect.ProtoMessage](msg M) int {
+func kserializedSize[M protoreflect.ProtoMessage](msg M) int {
 	out, err := proto.Marshal(msg)
 
 	if err != nil {
@@ -22,7 +22,7 @@ func serializedSize[M protoreflect.ProtoMessage](msg M) int {
 	return len(out)
 }
 
-func main() {
+func Kmain() {
 	s := &pb.Split{Name: "Packt"}
 	sz := serializedSize(s)
 
@@ -30,7 +30,7 @@ func main() {
 
 	s.Name = ""
 	s.ComplexName = &pb.ComplexName{Name: "Packt"}
-	sz = serializedSize(s)
+	sz = kserializedSize(s)
 
 	fmt.Printf("With ComplexName: %d\n", sz)
 }

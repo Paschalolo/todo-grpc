@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/paschalolo/grpc/proto/todo/v1"
+	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -63,7 +63,7 @@ func (c *Client) UpdateTasks(reqs ...*pb.UpdateTasksRequest) {
 			log.Fatalf("unexpected error: %v", err)
 		}
 		if req != nil {
-			fmt.Printf("updated task with id: %d\n", req.Task.Id)
+			fmt.Printf("updated task with id: %d\n", req.Id)
 		}
 	}
 	if _, err := stream.CloseAndRecv(); err != nil {
