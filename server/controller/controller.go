@@ -8,6 +8,7 @@ import (
 type Repository interface {
 	AddTask(ctx context.Context, description string, dueDate time.Time) (uint64, error)
 	GetTasks(f func(any) error) error
+	UpdateTasks(id uint64, description string, dueDate time.Time, done bool) error
 }
 type Controller struct {
 	Repo Repository
@@ -30,4 +31,8 @@ func (c *Controller) GetTasks(f func(any) error) error {
 		return err
 	}
 	return nil
+}
+
+func (c *Controller) UpdateTasks(id uint64, description string, dueDate time.Time, done bool) error {
+	return c.Repo.UpdateTasks(id, description, dueDate, done)
 }

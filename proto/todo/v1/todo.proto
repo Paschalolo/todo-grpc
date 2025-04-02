@@ -21,10 +21,19 @@ message AddTaskResponse{
 service TodoService{
     rpc AddTask (AddTaskRequest) returns (AddTaskResponse);
     rpc ListTasks (ListTasksRequest) returns (stream ListTasksResponse);
+    rpc UpdateTasks(stream UpdateTasksRequest) returns (UpdateTasksResponse);
 }
 
 message ListTasksRequest{}
 message ListTasksResponse{
     Task task = 1 ;
     bool overdue = 2 ;
+}
+
+
+message UpdateTasksRequest{
+    Task task = 1; 
+}
+message UpdateTasksResponse{
+
 }

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"io"
 	"time"
 
 	pb "github.com/paschalolo/grpc/proto/todo/v1"
@@ -44,4 +45,20 @@ func (h *Handler) ListTasks(req *pb.ListTasksRequest, stream pb.TodoService_List
 		return err
 	})
 
+}
+
+func (h *Handler) UpdateTasks(stream pb.TodoService_UpdateTasksServer) error {
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&pb.UpdateTasksResponse{})
+		}
+		if err != nil {
+			return err
+		}
+		err = h.ctrl.Repo.UpdateTasks(req.Task.Id, req.Task.Description, req.Task.DueDate.AsTime(), req.Task.Done)
+		if err != nil {
+			return err
+		}
+	}
 }

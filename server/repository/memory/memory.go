@@ -2,7 +2,7 @@ package memory
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"sync"
 	"time"
 
@@ -21,7 +21,6 @@ func New() *Repostiroy {
 func (r *Repostiroy) AddTask(_ context.Context, description string, dueDate time.Time) (uint64, error) {
 	r.Lock()
 	defer r.Unlock()
-	log.Println("here")
 	nextId := uint64(len(r.Tasks))
 	task := &pb.Task{
 		Id:          nextId,
@@ -33,6 +32,8 @@ func (r *Repostiroy) AddTask(_ context.Context, description string, dueDate time
 }
 
 func (r *Repostiroy) GetTasks(f func(any) error) error {
+	r.RLock()
+	defer r.RUnlock()
 	for _, task := range r.Tasks {
 
 		if err := f(task); err != nil {
@@ -40,4 +41,20 @@ func (r *Repostiroy) GetTasks(f func(any) error) error {
 		}
 	}
 	return nil
+}
+
+func (r *Repostiroy) UpdateTasks(id uint64, description string, dueDate time.Time, done bool) error {
+	r.Lock()
+	defer r.Unlock()
+	for i, task := range r.Tasks {
+		if task.Id == id {
+			t := r.Tasks[i]
+			t.Description = description
+			t.Done = done
+			t.DueDate = timestamppb.New(dueDate)
+			return nil
+		}
+	}
+	return fmt.Errorf("task with id %d not found ", id)
+
 }
