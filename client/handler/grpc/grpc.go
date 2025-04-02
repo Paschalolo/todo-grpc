@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sync"
 	"time"
 
 	pb "github.com/paschalolo/grpc/proto/todo/v1"
@@ -68,5 +69,39 @@ func (c *Client) UpdateTasks(reqs ...*pb.UpdateTasksRequest) {
 	if _, err := stream.CloseAndRecv(); err != nil {
 		log.Fatalf("unexpected error: %v", err)
 	}
+
+}
+
+func (c *Client) DeleteTask(reqs ...*pb.DeleteTasksRequest) {
+	stream, err := c.client.DeleteTasks(context.Background())
+	if err != nil {
+		log.Fatalf("unexpected error : %v ", err)
+	}
+
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for {
+			_, err := stream.Recv()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				log.Fatalf("error while recieving : %v ", err)
+			}
+			log.Println("deleted tasks")
+
+		}
+	}()
+	for _, req := range reqs {
+		if err := stream.Send(req); err != nil {
+			return
+		}
+	}
+	if err := stream.CloseSend(); err != nil {
+		return
+	}
+	wg.Wait()
 
 }

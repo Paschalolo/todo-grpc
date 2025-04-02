@@ -53,5 +53,14 @@ func main() {
 	fmt.Println("------------PRINT TASK----------------")
 	clientCall.PrintTasks()
 	fmt.Println("-------------------------------")
+	fmt.Println("------------DELETE ---------------")
+	clientCall.DeleteTask([]*pb.DeleteTasksRequest{
+		{Id: id1},
+		{Id: id3},
+		{Id: id4},
+	}...)
+	fmt.Println("------------PRINT TASK----------------")
+	clientCall.PrintTasks()
+	fmt.Println("-------------------------------")
 
 }
