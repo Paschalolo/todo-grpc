@@ -5,6 +5,10 @@ import (
 	"net"
 	"os"
 
+	pb "github.com/paschalolo/grpc/proto/todo/v1"
+	"github.com/paschalolo/grpc/server/controller"
+	grpcHandler "github.com/paschalolo/grpc/server/handler/grpc"
+	"github.com/paschalolo/grpc/server/repository/memory"
 	"google.golang.org/grpc"
 )
 
@@ -24,9 +28,13 @@ func main() {
 		}
 
 	}(lis)
+	inMemory := memory.New()
+	ctrl := controller.NewController(inMemory)
+	todoHandler := grpcHandler.NewHandler(ctrl)
 	log.Printf("listening at %s\n", addr)
 	opt := []grpc.ServerOption{}
 	s := grpc.NewServer(opt...)
+	pb.RegisterTodoServiceServer(s, todoHandler)
 	//registration of endpoints
 	defer s.Stop()
 
