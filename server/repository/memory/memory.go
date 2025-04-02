@@ -58,3 +58,13 @@ func (r *Repostiroy) UpdateTasks(id uint64, description string, dueDate time.Tim
 	return fmt.Errorf("task with id %d not found ", id)
 
 }
+
+func (r *Repostiroy) DeleteTask(id uint64) error {
+	for i, task := range r.Tasks {
+		if task.Id == id {
+			r.Tasks = append(r.Tasks[:i], r.Tasks[i+1:]...)
+			return nil
+		}
+	}
+	return fmt.Errorf("task with id not found %v ", id)
+}

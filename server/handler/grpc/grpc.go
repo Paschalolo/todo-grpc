@@ -62,3 +62,18 @@ func (h *Handler) UpdateTasks(stream pb.TodoService_UpdateTasksServer) error {
 		}
 	}
 }
+func (h *Handler) DeleteTasks(stream pb.TodoService_DeleteTasksServer) error {
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		if err := h.ctrl.Repo.DeleteTask(req.Id); err != nil {
+			return err
+		}
+		stream.Send(&pb.UpdateTasksResponse{})
+	}
+}

@@ -9,6 +9,7 @@ type Repository interface {
 	AddTask(ctx context.Context, description string, dueDate time.Time) (uint64, error)
 	GetTasks(f func(any) error) error
 	UpdateTasks(id uint64, description string, dueDate time.Time, done bool) error
+	DeleteTask(id uint64) error
 }
 type Controller struct {
 	Repo Repository
@@ -35,4 +36,8 @@ func (c *Controller) GetTasks(f func(any) error) error {
 
 func (c *Controller) UpdateTasks(id uint64, description string, dueDate time.Time, done bool) error {
 	return c.Repo.UpdateTasks(id, description, dueDate, done)
+}
+
+func (c *Controller) DeleteTask(id uint64) error {
+	return c.Repo.DeleteTask(id)
 }

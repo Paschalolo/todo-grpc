@@ -50,6 +50,7 @@ func main() {
 		{Task: &pb.Task{Id: id2, DueDate: timestamppb.New(dueDate.Add(5 * time.Hour))}},
 		{Task: &pb.Task{Id: id3, Done: true}},
 	}...)
+	fmt.Println("------------PRINT TASK----------------")
 	clientCall.PrintTasks()
 	fmt.Println("-------------------------------")
 
