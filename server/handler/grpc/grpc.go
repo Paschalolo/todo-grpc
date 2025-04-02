@@ -74,6 +74,8 @@ func (h *Handler) DeleteTasks(stream pb.TodoService_DeleteTasksServer) error {
 		if err := h.ctrl.Repo.DeleteTask(req.Id); err != nil {
 			return err
 		}
-		stream.Send(&pb.UpdateTasksResponse{})
+		if err := stream.Send(&pb.UpdateTasksResponse{}); err != nil {
+			return err
+		}
 	}
 }

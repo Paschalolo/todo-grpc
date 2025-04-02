@@ -3,6 +3,7 @@ package memory
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync"
 	"time"
 
@@ -60,9 +61,11 @@ func (r *Repostiroy) UpdateTasks(id uint64, description string, dueDate time.Tim
 }
 
 func (r *Repostiroy) DeleteTask(id uint64) error {
+	r.Lock()
+	defer r.Unlock()
 	for i, task := range r.Tasks {
 		if task.Id == id {
-			r.Tasks = append(r.Tasks[:i], r.Tasks[i+1:]...)
+			r.Tasks = slices.Delete(r.Tasks, i, i+1)
 			return nil
 		}
 	}
