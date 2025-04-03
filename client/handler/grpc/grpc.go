@@ -10,6 +10,7 @@ import (
 
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -35,8 +36,10 @@ func (c *Client) AddTask(description string, dueDate time.Time) uint64 {
 	return res.Id
 }
 
-func (c *Client) PrintTasks() {
-	req := &pb.ListTasksRequest{}
+func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
+	req := &pb.ListTasksRequest{
+		Mask: fm,
+	}
 	stream, err := c.client.ListTasks(context.Background(), req)
 	if err != nil {
 		log.Fatalf("unexpected error %v", err)

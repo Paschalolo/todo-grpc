@@ -10,6 +10,7 @@ import (
 	client "github.com/paschalolo/grpc/client/handler/grpc"
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -20,12 +21,17 @@ func main() {
 	}
 	addr := args[0]
 	conn := grpcutil.ServiceConnection(addr)
+	fm, err := fieldmaskpb.New(&pb.Task{}, "id")
+	if err != nil {
+		log.Fatalf("unexected eror %v ", err)
+	}
 	clientCall := client.NewClientCaller(conn)
 	defer func(conn *grpc.ClientConn) {
 		if err := conn.Close(); err != nil {
 			log.Fatalf("unexpected error %v \n", err)
 		}
 	}(conn)
+
 	fmt.Println("--------------ADD--------------")
 	dueDate := time.Now().Add(5 * time.Second)
 	id1 := clientCall.AddTask("this is a task ", dueDate)
@@ -39,10 +45,10 @@ func main() {
 	fmt.Printf("added task %d", id3)
 	fmt.Printf("added task %d", id4)
 	fmt.Printf("added task %d", id5)
-	fmt.Printf("added task %d", id6)
+	fmt.Printf("added task %d\n", id6)
 	fmt.Println("-------------------------------")
 	fmt.Println("--------------LIST STREAM--------------")
-	clientCall.PrintTasks()
+	clientCall.PrintTasks(fm)
 	fmt.Println("-------------------------------")
 	fmt.Println("-------------UPDATE TASKS--------------")
 	clientCall.UpdateTasks([]*pb.UpdateTasksRequest{
@@ -51,7 +57,7 @@ func main() {
 		{Id: id3, Done: true},
 	}...)
 	fmt.Println("------------PRINT TASK----------------")
-	clientCall.PrintTasks()
+	clientCall.PrintTasks(fm)
 	fmt.Println("-------------------------------")
 	fmt.Println("------------DELETE ---------------")
 	clientCall.DeleteTask([]*pb.DeleteTasksRequest{
@@ -60,7 +66,8 @@ func main() {
 		{Id: id4},
 	}...)
 	fmt.Println("------------PRINT TASK----------------")
-	clientCall.PrintTasks()
+	clientCall.PrintTasks(fm)
+
 	fmt.Println("-------------------------------")
 
 }

@@ -8,6 +8,7 @@ import (
 
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"github.com/paschalolo/grpc/server/controller"
+	mask "github.com/paschalolo/grpc/utils/masks"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -36,6 +37,7 @@ func (h *Handler) ListTasks(req *pb.ListTasksRequest, stream pb.TodoService_List
 
 	return h.ctrl.Repo.GetTasks(func(a any) error {
 		task, ok := a.(*pb.Task)
+		mask.Filter(task, req.Mask)
 		if !ok {
 			return status.Error(codes.InvalidArgument, "could not convert ")
 		}
