@@ -21,6 +21,8 @@ import (
 
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -32,7 +34,7 @@ type Client struct {
 }
 
 /*
-The NewClientCaller() makes a new client struct
+The NewClientCaller makes a new client struct
 it requires a grpc connection
 returns a
 */
@@ -49,7 +51,16 @@ func (c *Client) AddTask(description string, dueDate time.Time) uint64 {
 	}
 	res, err := c.client.AddTask(ctx, req)
 	if err != nil {
-		panic(err)
+		if s, ok := status.FromError(err); ok {
+			switch s.Code() {
+			case codes.Internal, codes.InvalidArgument:
+				log.Fatalf("%s: %s", s.Code(), s.Message())
+			default:
+				log.Fatal(s)
+			}
+		} else {
+			panic(err)
+		}
 	}
 	return res.Id
 }
@@ -58,7 +69,9 @@ func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
 	req := &pb.ListTasksRequest{
 		Mask: fm,
 	}
-	stream, err := c.client.ListTasks(context.Background(), req)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+	defer cancel()
+	stream, err := c.client.ListTasks(ctx, req)
 	if err != nil {
 		log.Fatalf("unexpected error %v", err)
 	}
@@ -69,6 +82,10 @@ func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
 		}
 		if err != nil {
 			log.Fatalf("unexpected error : %v", err)
+		}
+		if resp.Overdue {
+			log.Printf("Cancel called")
+			cancel()
 		}
 		fmt.Println(resp.Task.String(), "overdue:", resp.Overdue)
 	}
@@ -94,7 +111,9 @@ func (c *Client) UpdateTasks(reqs ...*pb.UpdateTasksRequest) {
 }
 
 func (c *Client) DeleteTask(reqs ...*pb.DeleteTasksRequest) {
-	stream, err := c.client.DeleteTasks(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+	stream, err := c.client.DeleteTasks(ctx)
 	if err != nil {
 		log.Fatalf("unexpected error : %v ", err)
 	}
@@ -120,9 +139,9 @@ func (c *Client) DeleteTask(reqs ...*pb.DeleteTasksRequest) {
 			return
 		}
 	}
+
 	if err := stream.CloseSend(); err != nil {
 		return
 	}
 	wg.Wait()
-
 }

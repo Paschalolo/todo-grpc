@@ -69,6 +69,5 @@ func main() {
 	clientCall.PrintTasks(fm)
 
 	fmt.Println("-------------------------------")
-	fmt.Println("-----------ERROR-----------")
 
 }

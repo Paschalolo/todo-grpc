@@ -40,8 +40,19 @@ func (h *Handler) AddTask(ctx context.Context, req *pb.AddTaskRequest) (*pb.AddT
 }
 
 func (h *Handler) ListTasks(req *pb.ListTasksRequest, stream pb.TodoService_ListTasksServer) error {
-
+	ctx := stream.Context()
 	return h.ctrl.Repo.GetTasks(func(a any) error {
+		select {
+		case <-ctx.Done():
+			switch ctx.Err() {
+			case context.DeadlineExceeded:
+				log.Printf("request deadline exceeded : %s ", ctx.Err())
+			default:
+			}
+			return ctx.Err()
+			// case <-time.After(1 * time.Millisecond):
+		default:
+		}
 		task, ok := a.(*pb.Task)
 		mask.Filter(task, req.Mask)
 		if !ok {
@@ -79,7 +90,18 @@ func (h *Handler) UpdateTasks(stream pb.TodoService_UpdateTasksServer) error {
 	}
 }
 func (h *Handler) DeleteTasks(stream pb.TodoService_DeleteTasksServer) error {
+	ctx := stream.Context()
 	for {
+		select {
+		case <-ctx.Done():
+			switch ctx.Err() {
+			case context.DeadlineExceeded:
+				log.Printf("request deadline exceeded : %s ", ctx.Err())
+			default:
+			}
+			return ctx.Err()
+		default:
+		}
 		req, err := stream.Recv()
 		if err == io.EOF {
 			return nil
