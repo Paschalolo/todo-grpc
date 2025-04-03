@@ -1,3 +1,14 @@
+/*
+The package works on the client handlers for grpc
+
+The names of the handlers are:
+  - AddTask
+  - PrintTasks
+  - UpdateTasks
+  - DeleteTask
+
+This is not rendered as code
+*/
 package grpc
 
 import (
@@ -14,10 +25,17 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// this Client structure is for holding
+// the gRPC TodoServiceClient
 type Client struct {
 	client pb.TodoServiceClient
 }
 
+/*
+The NewClientCaller() makes a new client struct
+it requires a grpc connection
+returns a
+*/
 func NewClientCaller(conn *grpc.ClientConn) *Client {
 	return &Client{
 		client: pb.NewTodoServiceClient(conn),

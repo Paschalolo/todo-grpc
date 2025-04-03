@@ -24,6 +24,12 @@ func NewHandler(ctrl *controller.Controller) *Handler {
 }
 
 func (h *Handler) AddTask(ctx context.Context, req *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
+	if len(req.Description) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "expected a task description got an empty string")
+	}
+	if req.DueDate.AsTime().Before(time.Now().UTC()) {
+		return nil, status.Error(codes.InvalidArgument, "expected a task due dates that is in the future ")
+	}
 	id, err := h.ctrl.Repo.AddTask(ctx, req.Description, req.DueDate.AsTime())
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
