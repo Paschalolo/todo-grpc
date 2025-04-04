@@ -3,9 +3,12 @@ package grpcutil
 import (
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
 	"github.com/paschalolo/grpc/client/interceptor"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/encoding/gzip"
 )
@@ -23,11 +26,18 @@ func ServiceConnection(addr string) *grpc.ClientConn {
 	if err != nil {
 		log.Fatalf("failed to load credentials : %v ", err)
 	}
+	retryOpts := []retry.CallOption{
+		retry.WithMax(3),
+		retry.WithBackoff(retry.BackoffExponential(100 * time.Millisecond)),
+		retry.WithCodes(codes.Unavailable),
+	}
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(creds),
 		// grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.UseCompressor(gzip.Name)),
-		grpc.WithUnaryInterceptor(interceptor.UnaryAuthInterceptor),
+		grpc.WithChainUnaryInterceptor(
+			retry.UnaryClientInterceptor(retryOpts...),
+			interceptor.UnaryAuthInterceptor),
 		grpc.WithStreamInterceptor(interceptor.StreamAuthInterceptor),
 	}
 	conn, err := grpc.NewClient(fmt.Sprintf("localhost:%v", addr), opts...)

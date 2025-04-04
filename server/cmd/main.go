@@ -6,10 +6,11 @@ import (
 	"net"
 	"os"
 
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/auth"
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"github.com/paschalolo/grpc/server/controller"
 	grpcHandler "github.com/paschalolo/grpc/server/handler/grpc"
-	"github.com/paschalolo/grpc/server/handler/interceptors"
+	"github.com/paschalolo/grpc/server/middleware"
 	"github.com/paschalolo/grpc/server/repository/memory"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -52,8 +53,8 @@ func main() {
 	}
 	opt := []grpc.ServerOption{
 		grpc.Creds(creds),
-		grpc.UnaryInterceptor(interceptors.UnaryAuthinterceptors),
-		grpc.StreamInterceptor(interceptors.StreamAuthInterceptor),
+		grpc.UnaryInterceptor(auth.UnaryServerInterceptor(middleware.ValidateAuthToken)),
+		grpc.StreamInterceptor(auth.StreamServerInterceptor(middleware.ValidateAuthToken)),
 	}
 	srv := grpc.NewServer(opt...)
 	reflection.Register(srv)
