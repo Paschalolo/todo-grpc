@@ -9,6 +9,7 @@ import (
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"github.com/paschalolo/grpc/server/controller"
 	grpcHandler "github.com/paschalolo/grpc/server/handler/grpc"
+	"github.com/paschalolo/grpc/server/handler/interceptors"
 	"github.com/paschalolo/grpc/server/repository/memory"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -34,7 +35,10 @@ func main() {
 	ctrl := controller.NewController(inMemory)
 	h := grpcHandler.NewHandler(ctrl)
 	log.Printf("listening at %s\n", addr)
-	opt := []grpc.ServerOption{}
+	opt := []grpc.ServerOption{
+		grpc.UnaryInterceptor(interceptors.UnaryAuthinterceptors),
+		grpc.StreamInterceptor(interceptors.StreamAuthInterceptor),
+	}
 	srv := grpc.NewServer(opt...)
 	reflection.Register(srv)
 	pb.RegisterTodoServiceServer(srv, h)
