@@ -1,8 +1,10 @@
 syntax = "proto3";
 package todo.v1;
 
+import "validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 import  "google/protobuf/field_mask.proto";
+
 option go_package = "github.com/paschalolo/grpc/todo/v1";
 message Task{
     uint64 id = 1 ;
@@ -12,8 +14,12 @@ message Task{
 }
 
 message AddTaskRequest{
-    string description  = 1 ;
-    google.protobuf.Timestamp due_date = 2;
+    string description  = 1 [
+        (validate.rules).string.min_len = 1 
+    ];
+    google.protobuf.Timestamp due_date = 2[
+        (validate.rules).timestamp.gt_now = true
+    ];
 }
 message AddTaskResponse{
     uint64 id  = 1 ; 

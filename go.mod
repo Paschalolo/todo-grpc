@@ -6,6 +6,8 @@ require google.golang.org/grpc v1.71.1
 
 require golang.org/x/exp v0.0.0-20250305212735-054e65f0b394
 
+require github.com/envoyproxy/protoc-gen-validate v1.2.1
+
 require (
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect

@@ -34,7 +34,7 @@ func main() {
 
 	fmt.Println("--------------ADD--------------")
 	dueDate := time.Now().Add(5 * time.Second)
-	id1 := clientCall.AddTask("this is a task ", dueDate)
+	id1 := clientCall.AddTask("this is a task", dueDate)
 	id2 := clientCall.AddTask("shooping at the mall  ", dueDate)
 	id3 := clientCall.AddTask("Go skating", dueDate)
 	id4 := clientCall.AddTask("attend prom ", dueDate)
