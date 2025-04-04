@@ -15,7 +15,6 @@ const authTokenValue string = "authd"
 func UnaryAuthInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	ctx = metadata.AppendToOutgoingContext(ctx, authTokenKey, authTokenValue)
 	return invoker(ctx, method, req, reply, cc, opts...)
-
 }
 
 // streamAuthInterceptor is an interceptor automatically adding the auth token
