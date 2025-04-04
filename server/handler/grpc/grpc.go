@@ -24,6 +24,17 @@ func NewHandler(ctrl *controller.Controller) *Handler {
 }
 
 func (h *Handler) AddTask(ctx context.Context, req *pb.AddTaskRequest) (*pb.AddTaskResponse, error) {
+	select {
+	case <-ctx.Done():
+		switch ctx.Err() {
+		case context.DeadlineExceeded:
+			log.Printf("request deadline exceeded : %s ", ctx.Err())
+		default:
+		}
+		return nil, ctx.Err()
+		// case <-time.After(1 * time.Millisecond):
+	default:
+	}
 	if len(req.Description) == 0 {
 		return nil, status.Error(codes.InvalidArgument, "expected a task description got an empty string")
 	}
@@ -70,7 +81,19 @@ func (h *Handler) ListTasks(req *pb.ListTasksRequest, stream pb.TodoService_List
 
 func (h *Handler) UpdateTasks(stream pb.TodoService_UpdateTasksServer) error {
 	totalLength := 0
+	ctx := stream.Context()
 	for {
+		select {
+		case <-ctx.Done():
+			switch ctx.Err() {
+			case context.DeadlineExceeded:
+				log.Printf("request deadline exceeded : %s ", ctx.Err())
+			default:
+			}
+			return ctx.Err()
+			// case <-time.After(1 * time.Millisecond):
+		default:
+		}
 		req, err := stream.Recv()
 		if err == io.EOF {
 			log.Println("total length:", totalLength)

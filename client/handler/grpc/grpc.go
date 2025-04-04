@@ -45,7 +45,8 @@ func NewClientCaller(conn *grpc.ClientConn) *Client {
 	}
 }
 func (c *Client) AddTask(description string, dueDate time.Time) uint64 {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
 	req := &pb.AddTaskRequest{
 		Description: description,
 		DueDate:     timestamppb.New(dueDate),
@@ -70,7 +71,7 @@ func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
 	req := &pb.ListTasksRequest{
 		Mask: fm,
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
 	defer cancel()
 	stream, err := c.client.ListTasks(ctx, req)
 	if err != nil {
@@ -93,7 +94,8 @@ func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
 }
 
 func (c *Client) UpdateTasks(reqs ...*pb.UpdateTasksRequest) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Millisecond)
+	defer cancel()
 	stream, err := c.client.UpdateTasks(ctx)
 	if err != nil {
 		log.Fatalf("unexpected error : %v", err)
@@ -113,7 +115,7 @@ func (c *Client) UpdateTasks(reqs ...*pb.UpdateTasksRequest) {
 }
 
 func (c *Client) DeleteTask(reqs ...*pb.DeleteTasksRequest) {
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 200*time.Second)
 	defer cancel()
 	stream, err := c.client.DeleteTasks(ctx)
 	if err != nil {
