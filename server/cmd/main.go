@@ -18,9 +18,10 @@ import (
 )
 
 const (
-	CA_CERT     = "../certs/ca_cert.pem"
-	SERVER_CERT = "../certs/server_cert.pem"
-	SERVER_KEY  = "../certs/server_key.pem"
+	SERVER_CERT        = "../certs/server_cert.pem"
+	SERVER_KEY         = "../certs/server_key.pem"
+	DOCKER_SERVER_CERT = "server_cert.pem"
+	DOCKER_SERVER_KEY  = "server_key.pem"
 )
 
 func main() {
@@ -42,6 +43,8 @@ func main() {
 	inMemory := memory.New()
 	ctrl := controller.NewController(inMemory)
 	h := grpcHandler.NewHandler(ctrl)
+	//run this line for docekr build
+	// creds, err := credentials.NewServerTLSFromFile(DOCKER_SERVER_CERT, DOCKER_SERVER_KEY)
 	creds, err := credentials.NewServerTLSFromFile(SERVER_CERT, SERVER_KEY)
 
 	if err != nil {

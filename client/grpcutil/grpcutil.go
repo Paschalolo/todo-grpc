@@ -11,13 +11,15 @@ import (
 )
 
 const (
-	CA_CERT     = "../certs/ca_cert.pem"
-	CLIENT_CERT = "../certs/server_cert.pem"
-	CLIENT_KEY  = "../certs/server_key.pem"
+	CA_CERT        = "../certs/ca_cert.pem"
+	DOCKER_CA_CERT = "ca_cert.pem"
 )
 
 func ServiceConnection(addr string) *grpc.ClientConn {
+	// run locally
 	creds, err := credentials.NewClientTLSFromFile(CA_CERT, "x.test.example.com")
+	// creds, err := credentials.NewClientTLSFromFile(DOCKER_CA_CERT, "x.test.example.com")
+
 	if err != nil {
 		log.Fatalf("failed to load credentials : %v ", err)
 	}
