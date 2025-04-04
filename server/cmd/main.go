@@ -12,8 +12,15 @@ import (
 	"github.com/paschalolo/grpc/server/handler/interceptors"
 	"github.com/paschalolo/grpc/server/repository/memory"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	_ "google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/reflection"
+)
+
+const (
+	CA_CERT     = "../certs/ca_cert.pem"
+	SERVER_CERT = "../certs/server_cert.pem"
+	SERVER_KEY  = "../certs/server_key.pem"
 )
 
 func main() {
@@ -35,8 +42,13 @@ func main() {
 	inMemory := memory.New()
 	ctrl := controller.NewController(inMemory)
 	h := grpcHandler.NewHandler(ctrl)
-	log.Printf("listening at %s\n", addr)
+	creds, err := credentials.NewServerTLSFromFile(SERVER_CERT, SERVER_KEY)
+
+	if err != nil {
+		log.Fatalf("failed to create credentials :%v", err)
+	}
 	opt := []grpc.ServerOption{
+		grpc.Creds(creds),
 		grpc.UnaryInterceptor(interceptors.UnaryAuthinterceptors),
 		grpc.StreamInterceptor(interceptors.StreamAuthInterceptor),
 	}
