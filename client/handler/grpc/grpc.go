@@ -22,6 +22,7 @@ import (
 	pb "github.com/paschalolo/grpc/proto/todo/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -50,7 +51,7 @@ func (c *Client) AddTask(description string, dueDate time.Time) uint64 {
 		Description: description,
 		DueDate:     timestamppb.New(dueDate),
 	}
-	res, err := c.client.AddTask(ctx, req)
+	res, err := c.client.AddTask(ctx, req, grpc.UseCompressor(gzip.Name))
 	if err != nil {
 		if s, ok := status.FromError(err); ok {
 			switch s.Code() {
