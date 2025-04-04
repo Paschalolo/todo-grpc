@@ -10,7 +10,6 @@ import (
 	"github.com/paschalolo/grpc/server/controller"
 	mask "github.com/paschalolo/grpc/utils/masks"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -71,20 +70,6 @@ func (h *Handler) ListTasks(req *pb.ListTasksRequest, stream pb.TodoService_List
 
 func (h *Handler) UpdateTasks(stream pb.TodoService_UpdateTasksServer) error {
 	totalLength := 0
-	ctx := stream.Context()
-	md, _ := metadata.FromIncomingContext(ctx)
-	if t, ok := md["auth_token"]; ok {
-		switch {
-		case len(t) != 1:
-			return status.Errorf(codes.InvalidArgument, "auth_token should contain only 1 value ")
-		case t[0] != "authd":
-			return status.Errorf(codes.Unauthenticated, "inncorect auth token ")
-		default:
-			log.Println("authenticated")
-		}
-	} else {
-		return status.Errorf(codes.Unauthenticated, "failed to get auth token ")
-	}
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {

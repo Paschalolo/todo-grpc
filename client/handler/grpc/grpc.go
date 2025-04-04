@@ -23,7 +23,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -71,7 +70,7 @@ func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
 	req := &pb.ListTasksRequest{
 		Mask: fm,
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	defer cancel()
 	stream, err := c.client.ListTasks(ctx, req)
 	if err != nil {
@@ -95,7 +94,6 @@ func (c *Client) PrintTasks(fm *fieldmaskpb.FieldMask) {
 
 func (c *Client) UpdateTasks(reqs ...*pb.UpdateTasksRequest) {
 	ctx := context.Background()
-	ctx = metadata.AppendToOutgoingContext(ctx, "auth_token", "authd")
 	stream, err := c.client.UpdateTasks(ctx)
 	if err != nil {
 		log.Fatalf("unexpected error : %v", err)

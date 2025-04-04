@@ -12,6 +12,7 @@ import (
 	"github.com/paschalolo/grpc/server/handler/interceptors"
 	"github.com/paschalolo/grpc/server/repository/memory"
 	"google.golang.org/grpc"
+	_ "google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/reflection"
 )
 
