@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := generate
 .PHONY : generate server  client proto
 server : 
-	cd server && go run cmd/*.go 8081
+	cd server &&  go run cmd/*.go 8081
 client : 
 	cd client && go run cmd/*.go 8081
 generate : 
